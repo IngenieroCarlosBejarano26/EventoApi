@@ -34,6 +34,9 @@ jobs:
       - name: Publish
         run: dotnet publish ${{ env.PROJECT_PATH }} --no-restore --configuration Release --output publish
 
+      - name: Clean publish output
+        run: rm -rf publish/BuildHost-*
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
