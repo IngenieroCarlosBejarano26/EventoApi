@@ -13,8 +13,18 @@ public static class DatabaseInitializer
         ApplicationDbContext context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         ILogger logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DatabaseInitializer");
 
-        logger.LogInformation("Aplicando migraciones de base de datos...");
-        await context.Database.MigrateAsync(cancellationToken);
+        // Con un proveedor relacional (PostgreSQL) aplicamos migraciones; con uno no relacional
+        // (InMemory en pruebas de integración) basta con crear el modelo + seed.
+        if (context.Database.IsRelational())
+        {
+            logger.LogInformation("Aplicando migraciones de base de datos...");
+            await context.Database.MigrateAsync(cancellationToken);
+        }
+        else
+        {
+            await context.Database.EnsureCreatedAsync(cancellationToken);
+        }
+
         logger.LogInformation("Base de datos lista.");
     }
 }

@@ -2,7 +2,7 @@ name: Deploy API (Azure App Service)
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
     paths-ignore:
       - "README.md"
   workflow_dispatch:
