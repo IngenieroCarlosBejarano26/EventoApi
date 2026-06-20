@@ -1,0 +1,34 @@
+using System.Reflection;
+using EventosVivos.Application.Common.Behaviors;
+using EventosVivos.Application.DomainEventHandlers;
+using FluentValidation;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace EventosVivos.Application;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection AddApplication(this IServiceCollection services)
+    {
+        Assembly assembly = Assembly.GetExecutingAssembly();
+
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
+        services.AddPipelineBehaviors();
+
+        services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
+
+        // Handler genérico de logging para todos los eventos de dominio (open-generic).
+        services.AddTransient(typeof(INotificationHandler<>), typeof(DomainEventLoggingHandler<>));
+
+        return services;
+    }
+
+    /// <summary>Orden de ejecución: Logging (más externo) -> Validation -> Handler.</summary>
+    private static IServiceCollection AddPipelineBehaviors(this IServiceCollection services)
+    {
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        return services;
+    }
+}
