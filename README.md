@@ -29,7 +29,7 @@ src/
 ├─ EventosVivos.Application     # Casos de uso (CQRS con MediatR), puertos, validadores, behaviors
 ├─ EventosVivos.Infrastructure  # EF Core (PostgreSQL), repositorios, cache, servicios
 └─ EventosVivos.Api             # Controllers, middleware, seguridad, SignalR, OpenAPI
-tests/EventosVivos.Tests        # Pruebas unitarias (dominio, validadores, handlers)
+tests/EventosVivos.Tests        # 50 pruebas (unitarias + integración end-to-end)
 ```
 
 - **CQRS con MediatR** por *vertical slices* (Command/Query + Handler + Validator + DTO).
@@ -43,6 +43,24 @@ tests/EventosVivos.Tests        # Pruebas unitarias (dominio, validadores, handl
 - Seguridad y robustez: **API Key** (`X-API-KEY`), **idempotencia** (`X-Idempotency-Key`),
   **rate limiting** nativo, `ProblemDetails` global y un `Hosted Service` que completa eventos
   automáticamente.
+- **Arquitectura Hexagonal**: el dominio no depende de EF, HTTP ni SignalR; facilita pruebas y
+  sustitución de adaptadores (p. ej. cola de mensajes en lugar de notificaciones simuladas).
+
+> Documentación ampliada: [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md)
+
+---
+
+## Tecnologías
+
+| Capa | Stack |
+|------|-------|
+| Runtime | .NET 10, ASP.NET Core Web API |
+| Persistencia | Entity Framework Core 10, PostgreSQL (Npgsql) |
+| Aplicación | MediatR, FluentValidation, CQRS, Result Pattern |
+| Tiempo real | SignalR |
+| Documentación | OpenAPI nativo + Scalar |
+| Cache | IMemoryCache |
+| Tests | xUnit, FluentAssertions, NSubstitute, WebApplicationFactory |
 
 ---
 
@@ -71,9 +89,9 @@ Las migraciones de EF Core y el seed de venues también se aplican automáticame
 dotnet test
 ```
 
-45 pruebas: entidades de dominio, value objects, validadores y handlers, con foco en **sobreventa**,
-**horario nocturno (RN03)**, **reserva tardía (RN04)**, **límite por precio (RN05)**,
-**confirmación de pago (RF-04)** y **cancelación con penalización (RN07)**.
+50 pruebas (45 unitarias + 5 de integración): dominio, validadores, handlers y flujos HTTP
+end-to-end, con foco en **sobreventa**, **horario nocturno (RN03)**, **reserva tardía (RN04)**,
+**límite por precio (RN05)**, **confirmación de pago (RF-04)** y **cancelación con penalización (RN07)**.
 
 ---
 
@@ -96,7 +114,7 @@ dotnet test
 ### CI/CD (GitHub Actions)
 
 El workflow `.github/workflows/deploy.yml` restaura, **ejecuta los tests**, publica y despliega la API
-al App Service en cada push a `main`/`develop`.
+al App Service en cada push a `main`.
 
 **Secreto requerido** (GitHub → Settings → Secrets and variables → Actions):
 
