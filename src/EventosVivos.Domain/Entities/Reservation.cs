@@ -1,4 +1,4 @@
-using EventosVivos.Domain.Common;
+﻿using EventosVivos.Domain.Common;
 using EventosVivos.Domain.Enums;
 using EventosVivos.Domain.Errors;
 using EventosVivos.Domain.Events;
@@ -6,10 +6,6 @@ using EventosVivos.Domain.ValueObjects;
 
 namespace EventosVivos.Domain.Entities;
 
-/// <summary>
-/// Raíz de agregado Reserva. Encapsula el ciclo de vida pendiente -> confirmada -> cancelada/perdida
-/// y emite eventos de dominio en cada transición relevante.
-/// </summary>
 public sealed class Reservation : Entity
 {
     public const int LateBookingThresholdHours = 24;
@@ -32,10 +28,6 @@ public sealed class Reservation : Entity
 
     private Reservation() { } // EF Core
 
-    /// <summary>
-    /// Crea una reserva en estado PendientePago aplicando RF-03, RN04 y RN05.
-    /// Descuenta las entradas del evento de inmediato para garantizar control en tiempo real (anti-sobreventa).
-    /// </summary>
     public static Result<Reservation> Create(
         Event @event,
         int quantity,
@@ -51,19 +43,15 @@ public sealed class Reservation : Entity
 
         TimeSpan timeUntilStart = @event.StartDate - now;
 
-        // RN04: no se permiten reservas si el evento inicia en menos de 1 hora.
         if (timeUntilStart < TimeSpan.FromHours(1))
             return DomainErrors.Reservation.TooLate;
 
-        // RF-03: si faltan menos de 24h, máximo 5 entradas por transacción.
         if (timeUntilStart < TimeSpan.FromHours(LateBookingThresholdHours) && quantity > LateBookingMaxTickets)
             return DomainErrors.Reservation.MaxFiveWithin24Hours;
 
-        // RN05: eventos con precio > $100 limitan a 10 entradas por transacción.
         if (@event.Price > PremiumPriceThreshold && quantity > PremiumMaxTickets)
             return DomainErrors.Reservation.MaxTenForPremium;
 
-        // Reserva efectiva del inventario (valida disponibilidad).
         Result reserveResult = @event.ReserveTickets(quantity);
         if (reserveResult.IsFailure)
             return Result.Failure<Reservation>(reserveResult.Error);
@@ -85,7 +73,6 @@ public sealed class Reservation : Entity
         return reservation;
     }
 
-    /// <summary>RF-04: confirma el pago y genera el código de reserva único.</summary>
     public Result Confirm(ReservationCode code, DateTimeOffset now)
     {
         if (Status == ReservationStatus.Confirmada)
@@ -104,11 +91,6 @@ public sealed class Reservation : Entity
         return Result.Success();
     }
 
-    /// <summary>
-    /// RF-05 / RN07: cancela la reserva.
-    /// - Pendiente o confirmada con +48h: pasa a Cancelada y libera entradas.
-    /// - Confirmada con menos de 48h: pasa a Perdida (penalización), NO libera entradas.
-    /// </summary>
     public Result Cancel(Event @event, DateTimeOffset now)
     {
         if (Status is ReservationStatus.Cancelada or ReservationStatus.Perdida)
@@ -120,7 +102,6 @@ public sealed class Reservation : Entity
         bool ticketsReleased;
         if (wasConfirmed && withinPenaltyWindow)
         {
-            // RN07: penalización, no se liberan entradas.
             Status = ReservationStatus.Perdida;
             ticketsReleased = false;
         }

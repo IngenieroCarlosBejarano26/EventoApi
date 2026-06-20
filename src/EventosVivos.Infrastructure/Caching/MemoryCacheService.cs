@@ -1,13 +1,9 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using EventosVivos.Application.Common.Abstractions;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace EventosVivos.Infrastructure.Caching;
 
-/// <summary>
-/// Adaptador de cache sobre IMemoryCache. Lleva registro de las claves activas para
-/// poder invalidar por prefijo (IMemoryCache no expone enumeración de claves).
-/// </summary>
 internal sealed class MemoryCacheService(IMemoryCache cache) : ICacheService
 {
     private static readonly TimeSpan DefaultTtl = TimeSpan.FromMinutes(5);

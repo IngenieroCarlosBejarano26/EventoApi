@@ -1,4 +1,4 @@
-using EventosVivos.Domain.Entities;
+﻿using EventosVivos.Domain.Entities;
 using EventosVivos.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -19,14 +19,12 @@ public sealed class ReservationConfiguration : IEntityTypeConfiguration<Reservat
         builder.Property(r => r.ConfirmedAt);
         builder.Property(r => r.CancelledAt);
 
-        // Value Object Email -> string.
         builder.Property(r => r.BuyerEmail)
             .HasConversion(email => email.Value, value => Email.Create(value).Value)
             .HasColumnName("buyer_email")
             .HasMaxLength(Email.MaxLength)
             .IsRequired();
 
-        // Value Object ReservationCode (nullable) -> string, único cuando existe.
         builder.Property(r => r.Code)
             .HasConversion(code => code!.Value, value => ReservationCode.FromValue(value))
             .HasColumnName("code")
@@ -40,7 +38,6 @@ public sealed class ReservationConfiguration : IEntityTypeConfiguration<Reservat
             .HasForeignKey(r => r.EventId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Concurrencia optimista mapeada a la columna de sistema "xmin" de PostgreSQL.
         builder.Property<uint>("Version")
             .IsRowVersion();
 

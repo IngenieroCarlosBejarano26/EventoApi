@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Threading.RateLimiting;
 using EventosVivos.Api.Configuration;
 using Microsoft.AspNetCore.Mvc;
@@ -6,17 +6,11 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace EventosVivos.Api.Extensions;
 
-/// <summary>Nombres de políticas de rate limiting, centralizados para evitar literales mágicos.</summary>
 public static class RateLimitPolicies
 {
-    /// <summary>Política estricta para operaciones sensibles de escritura (p. ej. crear reservas).</summary>
     public const string Reservations = "reservations";
 }
 
-/// <summary>
-/// Configuración de rate limiting (nativo de ASP.NET Core). Los valores se enlazan desde la sección
-/// "RateLimiting" de la configuración (patrón Options) y se validan al arrancar.
-/// </summary>
 public static class RateLimitingServiceExtensions
 {
     public static IServiceCollection AddRateLimiting(this IServiceCollection services, IConfiguration configuration)
@@ -38,7 +32,6 @@ public static class RateLimitingServiceExtensions
         {
             limiter.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
-            // Límite global por IP. Excluye el hub de SignalR (conexiones persistentes / reconexiones).
             limiter.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
             {
                 if (httpContext.Request.Path.StartsWithSegments("/hubs"))
@@ -49,7 +42,6 @@ public static class RateLimitingServiceExtensions
                     clientKey, _ => ToFixedWindow(options.Global));
             });
 
-            // Política específica para crear reservas (anti-abuso del inventario de entradas).
             limiter.AddPolicy(RateLimitPolicies.Reservations, httpContext =>
                 RateLimitPartition.GetFixedWindowLimiter(
                     httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
@@ -80,7 +72,7 @@ public static class RateLimitingServiceExtensions
         {
             Status = StatusCodes.Status429TooManyRequests,
             Title = "Too Many Requests",
-            Detail = "Has superado el límite de solicitudes permitido. Inténtalo de nuevo más tarde."
+            Detail = "Has superado el lÃ­mite de solicitudes permitido. IntÃ©ntalo de nuevo mÃ¡s tarde."
         }, cancellationToken);
     }
 }

@@ -1,4 +1,4 @@
-using EventosVivos.Application.Common.Abstractions;
+﻿using EventosVivos.Application.Common.Abstractions;
 using EventosVivos.Application.Common.Exceptions;
 using EventosVivos.Application.Common.Messaging;
 using EventosVivos.Application.Features.Reservations.Shared;
@@ -25,8 +25,6 @@ internal sealed class CreateReservationCommandHandler(
         if (emailResult.IsFailure)
             return Result.Failure<ReservationDto>(emailResult.Error);
 
-        // Reintento ante conflicto de concurrencia optimista: garantiza que ante
-        // reservas simultáneas nunca se venda por encima de la capacidad (anti-sobreventa).
         for (int attempt = 1; ; attempt++)
         {
             Event? @event = await eventRepository.GetByIdAsync(command.EventId, includeVenue: false, cancellationToken);
@@ -48,7 +46,7 @@ internal sealed class CreateReservationCommandHandler(
             }
             catch (ConcurrencyConflictException) when (attempt < MaxConcurrencyRetries)
             {
-                continue; // Otro proceso modificó el evento; recargamos y reintentamos.
+                continue; // Otro proceso modificÃ³ el evento; recargamos y reintentamos.
             }
             catch (ConcurrencyConflictException)
             {

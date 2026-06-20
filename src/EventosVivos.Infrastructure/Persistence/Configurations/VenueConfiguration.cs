@@ -1,4 +1,4 @@
-using EventosVivos.Domain.Entities;
+﻿using EventosVivos.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,10 +17,9 @@ public sealed class VenueConfiguration : IEntityTypeConfiguration<Venue>
 
         builder.Ignore(v => v.DomainEvents);
 
-        // Datos de referencia (RF: venues preexistentes).
         builder.HasData(
-            new { Id = 1, Name = "Auditorio Central", Capacity = 200, City = "Bogotá" },
-            new { Id = 2, Name = "Sala Norte", Capacity = 50, City = "Bogotá" },
-            new { Id = 3, Name = "Arena Sur", Capacity = 500, City = "Medellín" });
+            new { Id = 1, Name = "Auditorio Central", Capacity = 200, City = "BogotÃ¡" },
+            new { Id = 2, Name = "Sala Norte", Capacity = 50, City = "BogotÃ¡" },
+            new { Id = 3, Name = "Arena Sur", Capacity = 500, City = "MedellÃ­n" });
     }
 }

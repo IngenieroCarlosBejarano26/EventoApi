@@ -1,4 +1,4 @@
-using EventosVivos.Application.Common.Abstractions;
+﻿using EventosVivos.Application.Common.Abstractions;
 using EventosVivos.Domain.Common;
 using EventosVivos.Domain.Entities;
 using EventosVivos.Domain.Enums;
@@ -6,7 +6,6 @@ using EventosVivos.Domain.ValueObjects;
 
 namespace EventosVivos.Tests.TestHelpers;
 
-/// <summary>Reloj fijo para reglas temporales deterministas.</summary>
 public sealed class FakeDateTimeProvider(DateTimeOffset now) : IDateTimeProvider
 {
     public DateTimeOffset UtcNow { get; } = now;
@@ -14,11 +13,10 @@ public sealed class FakeDateTimeProvider(DateTimeOffset now) : IDateTimeProvider
 
 public static class TestData
 {
-    // Lunes 5 de enero de 2026, 10:00 UTC.
     public static readonly DateTimeOffset Now = new(2026, 1, 5, 10, 0, 0, TimeSpan.Zero);
 
-    public static Venue AuditorioCentral() => new(1, "Auditorio Central", 200, "Bogotá");
-    public static Venue SalaNorte() => new(2, "Sala Norte", 50, "Bogotá");
+    public static Venue AuditorioCentral() => new(1, "Auditorio Central", 200, "BogotÃ¡");
+    public static Venue SalaNorte() => new(2, "Sala Norte", 50, "BogotÃ¡");
 
     public static Event ValidEvent(
         Venue? venue = null,
@@ -34,7 +32,7 @@ public static class TestData
 
         Result<Event> result = Event.Create(
             "Evento de prueba",
-            "Descripción válida del evento de prueba.",
+            "DescripciÃ³n vÃ¡lida del evento de prueba.",
             venue,
             maxCapacity,
             startDate,

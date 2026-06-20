@@ -1,6 +1,5 @@
-namespace EventosVivos.Domain.Enums;
+﻿namespace EventosVivos.Domain.Enums;
 
-/// <summary>Tipos de evento válidos (lenguaje ubicuo del negocio).</summary>
 public enum EventType
 {
     Conferencia = 1,

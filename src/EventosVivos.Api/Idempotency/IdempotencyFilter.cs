@@ -1,14 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 
 namespace EventosVivos.Api.Idempotency;
 
-/// <summary>
-/// Marca un endpoint como idempotente. Requiere el header X-Idempotency-Key y, ante una
-/// repetición de la misma clave, devuelve la respuesta previamente calculada sin reprocesar.
-/// </summary>
 [AttributeUsage(AttributeTargets.Method)]
 public sealed class IdempotentAttribute : Attribute, IFilterFactory
 {
@@ -34,7 +30,7 @@ internal sealed class IdempotencyFilter(IMemoryCache cache) : IAsyncActionFilter
             {
                 Status = StatusCodes.Status400BadRequest,
                 Title = "MissingIdempotencyKey",
-                Detail = $"Se requiere el header '{HeaderName}' para esta operación."
+                Detail = $"Se requiere el header '{HeaderName}' para esta operaciÃ³n."
             })
             {
                 StatusCode = StatusCodes.Status400BadRequest

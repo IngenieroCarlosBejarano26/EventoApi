@@ -1,9 +1,5 @@
-namespace EventosVivos.Domain.Common;
+﻿namespace EventosVivos.Domain.Common;
 
-/// <summary>
-/// Clasifica el error para poder mapearlo a un código HTTP en la capa de presentación
-/// sin que el dominio conozca HTTP.
-/// </summary>
 public enum ErrorType
 {
     Failure = 0,
@@ -13,9 +9,6 @@ public enum ErrorType
     Unauthorized = 4
 }
 
-/// <summary>
-/// Representa un error de negocio como dato (no como excepción).
-/// </summary>
 public sealed record Error(string Code, string Description, ErrorType Type)
 {
     public static readonly Error None = new(string.Empty, string.Empty, ErrorType.Failure);

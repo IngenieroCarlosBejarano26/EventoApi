@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
 
@@ -11,9 +11,6 @@ public sealed class ApiKeyOptions
     public string Value { get; init; } = string.Empty;
 }
 
-/// <summary>
-/// Marca un endpoint como administrativo: exige una API Key válida en el header X-API-KEY.
-/// </summary>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
 public sealed class RequireApiKeyAttribute : Attribute, IFilterFactory
 {
@@ -41,7 +38,7 @@ internal sealed class ApiKeyAuthorizationFilter(
             {
                 Status = StatusCodes.Status401Unauthorized,
                 Title = "Unauthorized",
-                Detail = $"Se requiere una API Key válida en el header '{headerName}'."
+                Detail = $"Se requiere una API Key vÃ¡lida en el header '{headerName}'."
             })
             {
                 StatusCode = StatusCodes.Status401Unauthorized

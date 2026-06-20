@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using EventosVivos.Application.Common.Behaviors;
 using EventosVivos.Application.DomainEventHandlers;
 using FluentValidation;
@@ -18,13 +18,11 @@ public static class DependencyInjection
 
         services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
 
-        // Handler genérico de logging para todos los eventos de dominio (open-generic).
         services.AddTransient(typeof(INotificationHandler<>), typeof(DomainEventLoggingHandler<>));
 
         return services;
     }
 
-    /// <summary>Orden de ejecución: Logging (más externo) -> Validation -> Handler.</summary>
     private static IServiceCollection AddPipelineBehaviors(this IServiceCollection services)
     {
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));

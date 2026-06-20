@@ -1,4 +1,4 @@
-using EventosVivos.Domain.Entities;
+﻿using EventosVivos.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -31,7 +31,6 @@ public sealed class EventConfiguration : IEntityTypeConfiguration<Event>
         builder.HasIndex(e => e.Status);
         builder.HasIndex(e => e.StartDate);
 
-        // Concurrencia optimista mapeada a la columna de sistema "xmin" de PostgreSQL (evita sobreventa).
         builder.Property<uint>("Version")
             .IsRowVersion();
 

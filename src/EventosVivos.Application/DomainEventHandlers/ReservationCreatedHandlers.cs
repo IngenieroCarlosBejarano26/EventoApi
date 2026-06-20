@@ -1,10 +1,9 @@
-using EventosVivos.Application.Common.Abstractions;
+﻿using EventosVivos.Application.Common.Abstractions;
 using EventosVivos.Domain.Events;
 using MediatR;
 
 namespace EventosVivos.Application.DomainEventHandlers;
 
-/// <summary>Auditoría de la creación de reservas.</summary>
 public sealed class ReservationCreatedAuditHandler(IAuditService audit)
     : INotificationHandler<ReservationCreatedDomainEvent>
 {
@@ -15,7 +14,6 @@ public sealed class ReservationCreatedAuditHandler(IAuditService audit)
             cancellationToken);
 }
 
-/// <summary>Notificación simulada al comprador.</summary>
 public sealed class ReservationCreatedNotificationHandler(INotificationService notifications)
     : INotificationHandler<ReservationCreatedDomainEvent>
 {
@@ -23,6 +21,6 @@ public sealed class ReservationCreatedNotificationHandler(INotificationService n
         notifications.NotifyAsync(
             e.BuyerEmail,
             "Reserva recibida",
-            $"Hemos registrado tu reserva de {e.Quantity} entrada(s). Está pendiente de pago.",
+            $"Hemos registrado tu reserva de {e.Quantity} entrada(s). EstÃ¡ pendiente de pago.",
             cancellationToken);
 }

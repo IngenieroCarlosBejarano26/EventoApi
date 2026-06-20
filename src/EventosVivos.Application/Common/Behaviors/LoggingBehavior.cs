@@ -1,13 +1,10 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using EventosVivos.Domain.Common;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace EventosVivos.Application.Common.Behaviors;
 
-/// <summary>
-/// Logging estructurado de cada request: inicio, resultado (éxito/fallo) y duración.
-/// </summary>
 public sealed class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TRequest, TResponse>> logger)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
@@ -28,13 +25,13 @@ public sealed class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior
         if (response.IsSuccess)
         {
             logger.LogInformation(
-                "{RequestName} completado con éxito en {ElapsedMs} ms",
+                "{RequestName} completado con Ã©xito en {ElapsedMs} ms",
                 requestName, stopwatch.ElapsedMilliseconds);
         }
         else
         {
             logger.LogWarning(
-                "{RequestName} falló con error {ErrorCode}: {ErrorDescription} ({ElapsedMs} ms)",
+                "{RequestName} fallÃ³ con error {ErrorCode}: {ErrorDescription} ({ElapsedMs} ms)",
                 requestName, response.Error.Code, response.Error.Description, stopwatch.ElapsedMilliseconds);
         }
 

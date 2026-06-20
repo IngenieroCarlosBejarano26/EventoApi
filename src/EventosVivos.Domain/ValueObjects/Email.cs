@@ -1,13 +1,9 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using EventosVivos.Domain.Common;
 using EventosVivos.Domain.Errors;
 
 namespace EventosVivos.Domain.ValueObjects;
 
-/// <summary>
-/// Value Object Email: garantiza que un email siempre sea válido por construcción.
-/// La validación vive aquí (no se puede crear un Email inválido).
-/// </summary>
 public sealed partial class Email : ValueObject
 {
     public const int MaxLength = 256;

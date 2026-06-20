@@ -1,12 +1,9 @@
-using EventosVivos.Application.Common.Abstractions;
+﻿using EventosVivos.Application.Common.Abstractions;
 using EventosVivos.Domain.Entities;
 using EventosVivos.Infrastructure.Persistence;
 
 namespace EventosVivos.Api.BackgroundServices;
 
-/// <summary>
-/// RN06: marca automáticamente como Completados los eventos activos cuya fecha de fin ya pasó.
-/// </summary>
 public sealed class EventCompletionBackgroundService(
     IServiceScopeFactory scopeFactory,
     IDateTimeProvider dateTimeProvider,

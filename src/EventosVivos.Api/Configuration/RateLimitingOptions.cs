@@ -1,18 +1,14 @@
-namespace EventosVivos.Api.Configuration;
+﻿namespace EventosVivos.Api.Configuration;
 
-/// <summary>Opciones de rate limiting enlazadas desde la sección "RateLimiting" de la configuración.</summary>
 public sealed class RateLimitingOptions
 {
     public const string SectionName = "RateLimiting";
 
-    /// <summary>Límite global por IP (red de seguridad para toda la API).</summary>
     public RateLimitRule Global { get; init; } = new() { PermitLimit = 120, WindowSeconds = 60 };
 
-    /// <summary>Límite estricto para crear reservas (anti-abuso del inventario).</summary>
     public RateLimitRule Reservations { get; init; } = new() { PermitLimit = 10, WindowSeconds = 60 };
 }
 
-/// <summary>Regla de ventana fija: número de solicitudes permitidas por ventana de tiempo.</summary>
 public sealed class RateLimitRule
 {
     public int PermitLimit { get; init; }

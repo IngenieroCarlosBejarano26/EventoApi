@@ -1,8 +1,5 @@
-namespace EventosVivos.Domain.Common;
+﻿namespace EventosVivos.Domain.Common;
 
-/// <summary>
-/// Base para Value Objects: igualdad estructural por componentes e inmutabilidad.
-/// </summary>
 public abstract class ValueObject : IEquatable<ValueObject>
 {
     protected abstract IEnumerable<object?> GetEqualityComponents();

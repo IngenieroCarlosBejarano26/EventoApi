@@ -1,13 +1,9 @@
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace EventosVivos.Infrastructure.Persistence;
 
-/// <summary>
-/// Permite a las herramientas de EF Core (migraciones) crear el contexto en tiempo de diseño
-/// sin levantar todo el host de la aplicación.
-/// </summary>
 internal sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 {
     public ApplicationDbContext CreateDbContext(string[] args)

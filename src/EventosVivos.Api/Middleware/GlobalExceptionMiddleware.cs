@@ -1,12 +1,9 @@
-using EventosVivos.Application.Common.Exceptions;
+﻿using EventosVivos.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using ValidationException = EventosVivos.Application.Common.Exceptions.ValidationException;
 
 namespace EventosVivos.Api.Middleware;
 
-/// <summary>
-/// Convierte cualquier excepción no controlada en una respuesta ProblemDetails estandarizada.
-/// </summary>
 public sealed class GlobalExceptionMiddleware(
     RequestDelegate next,
     ILogger<GlobalExceptionMiddleware> logger)
@@ -19,7 +16,7 @@ public sealed class GlobalExceptionMiddleware(
         }
         catch (ValidationException ex)
         {
-            logger.LogWarning("Validación fallida: {Errors}", string.Join("; ", ex.Errors.Keys));
+            logger.LogWarning("ValidaciÃ³n fallida: {Errors}", string.Join("; ", ex.Errors.Keys));
             await WriteValidationProblemAsync(context, ex);
         }
         catch (ConcurrencyConflictException ex)
@@ -29,12 +26,12 @@ public sealed class GlobalExceptionMiddleware(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Excepción no controlada.");
+            logger.LogError(ex, "ExcepciÃ³n no controlada.");
             await WriteProblemAsync(
                 context,
                 StatusCodes.Status500InternalServerError,
                 "InternalServerError",
-                "Ocurrió un error inesperado.");
+                "OcurriÃ³ un error inesperado.");
         }
     }
 
@@ -43,7 +40,7 @@ public sealed class GlobalExceptionMiddleware(
         ValidationProblemDetails problem = new(ex.Errors.ToDictionary(e => e.Key, e => e.Value))
         {
             Status = StatusCodes.Status400BadRequest,
-            Title = "Error de validación",
+            Title = "Error de validaciÃ³n",
             Type = "https://httpstatuses.io/400"
         };
 

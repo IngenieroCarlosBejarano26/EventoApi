@@ -1,9 +1,5 @@
-namespace EventosVivos.Domain.Common;
+﻿namespace EventosVivos.Domain.Common;
 
-/// <summary>
-/// Raíz de agregado / entidad base. Encapsula la colección de eventos de dominio
-/// para que las entidades expresen "qué ocurrió" sin conocer cómo se despachan.
-/// </summary>
 public abstract class Entity
 {
     private readonly List<IDomainEvent> _domainEvents = [];

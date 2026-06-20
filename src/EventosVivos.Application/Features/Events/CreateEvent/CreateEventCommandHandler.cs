@@ -1,4 +1,4 @@
-using EventosVivos.Application.Common.Abstractions;
+﻿using EventosVivos.Application.Common.Abstractions;
 using EventosVivos.Application.Common.Messaging;
 using EventosVivos.Application.Features.Events.Shared;
 using EventosVivos.Domain.Common;
@@ -21,7 +21,6 @@ internal sealed class CreateEventCommandHandler(
         if (venue is null)
             return DomainErrors.Venue.NotFound(command.VenueId);
 
-        // RN02: no permitir superposición de eventos activos en el mismo venue.
         bool hasOverlap = await eventRepository.HasOverlappingActiveEventAsync(
             command.VenueId, command.StartDate, command.EndDate, excludeEventId: null, cancellationToken);
 
@@ -46,7 +45,6 @@ internal sealed class CreateEventCommandHandler(
         eventRepository.Add(@event);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // Invalida cachés afectadas por el alta.
         cache.RemoveByPrefix(CacheKeys.EventsPrefix);
 
         return @event.ToDto();

@@ -1,4 +1,4 @@
-using EventosVivos.Application.Common.Abstractions;
+﻿using EventosVivos.Application.Common.Abstractions;
 using EventosVivos.Domain.Entities;
 using EventosVivos.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +40,6 @@ internal sealed class EventRepository(ApplicationDbContext context) : IEventRepo
 
         if (!string.IsNullOrWhiteSpace(filter.TitleContains))
         {
-            // ILIKE de PostgreSQL realiza la búsqueda parcial case-insensitive (RF-02).
             string term = filter.TitleContains.Trim();
             query = query.Where(e => EF.Functions.ILike(e.Title, $"%{term}%"));
         }

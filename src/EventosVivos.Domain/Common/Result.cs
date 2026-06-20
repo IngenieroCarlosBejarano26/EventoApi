@@ -1,9 +1,5 @@
-namespace EventosVivos.Domain.Common;
+﻿namespace EventosVivos.Domain.Common;
 
-/// <summary>
-/// Patrón Result: modela éxito/fallo de forma explícita evitando excepciones
-/// para errores de negocio esperables (control de flujo limpio y testeable).
-/// </summary>
 public class Result
 {
     protected Result(bool isSuccess, Error error)

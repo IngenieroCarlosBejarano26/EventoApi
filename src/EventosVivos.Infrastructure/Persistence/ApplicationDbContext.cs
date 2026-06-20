@@ -1,4 +1,4 @@
-using EventosVivos.Application.Common.Abstractions;
+﻿using EventosVivos.Application.Common.Abstractions;
 using EventosVivos.Application.Common.Exceptions;
 using EventosVivos.Domain.Common;
 using EventosVivos.Domain.Entities;
@@ -24,7 +24,6 @@ public sealed class ApplicationDbContext(
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        // Recolecta y limpia los eventos antes de persistir.
         List<IDomainEvent> domainEvents = ChangeTracker
             .Entries<Entity>()
             .Select(entry => entry.Entity)
@@ -40,7 +39,6 @@ public sealed class ApplicationDbContext(
         {
             int result = await base.SaveChangesAsync(cancellationToken);
 
-            // Publica tras confirmar la persistencia (los handlers actuales son de side-effects).
             foreach (IDomainEvent domainEvent in domainEvents)
                 await publisher.Publish(domainEvent, cancellationToken);
 
@@ -49,7 +47,7 @@ public sealed class ApplicationDbContext(
         catch (DbUpdateConcurrencyException ex)
         {
             throw new ConcurrencyConflictException(
-                "El registro fue modificado por otra operación concurrente.", ex);
+                "El registro fue modificado por otra operaciÃ³n concurrente.", ex);
         }
     }
 }

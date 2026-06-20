@@ -1,4 +1,4 @@
-using EventosVivos.Domain.Entities;
+﻿using EventosVivos.Domain.Entities;
 
 namespace EventosVivos.Application.Common.Abstractions;
 
@@ -8,7 +8,6 @@ public interface IEventRepository
 
     Task<IReadOnlyList<Event>> ListAsync(EventFilter filter, CancellationToken cancellationToken = default);
 
-    /// <summary>RN02: detecta si el venue tiene un evento activo con horario superpuesto.</summary>
     Task<bool> HasOverlappingActiveEventAsync(
         int venueId,
         DateTimeOffset startDate,
@@ -16,7 +15,6 @@ public interface IEventRepository
         Guid? excludeEventId = null,
         CancellationToken cancellationToken = default);
 
-    /// <summary>RN06: eventos activos cuya fecha de fin ya pasó (para el background service).</summary>
     Task<IReadOnlyList<Event>> GetActiveFinishedEventsAsync(
         DateTimeOffset now,
         CancellationToken cancellationToken = default);

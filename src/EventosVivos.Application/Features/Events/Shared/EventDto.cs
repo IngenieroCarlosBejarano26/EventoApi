@@ -1,9 +1,8 @@
-using EventosVivos.Domain.Entities;
+﻿using EventosVivos.Domain.Entities;
 using EventosVivos.Domain.Enums;
 
 namespace EventosVivos.Application.Features.Events.Shared;
 
-/// <summary>DTO de lectura de un evento expuesto por la API.</summary>
 public sealed record EventDto(
     Guid Id,
     string Title,

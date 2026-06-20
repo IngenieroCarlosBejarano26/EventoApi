@@ -1,6 +1,5 @@
-namespace EventosVivos.Application.Common.Abstractions;
+﻿namespace EventosVivos.Application.Common.Abstractions;
 
-/// <summary>Claves y prefijos de cache centralizados para evitar strings mágicos dispersos.</summary>
 public static class CacheKeys
 {
     public const string EventsPrefix = "events:";

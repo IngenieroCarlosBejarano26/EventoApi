@@ -1,12 +1,10 @@
-namespace EventosVivos.Api.Extensions;
+﻿namespace EventosVivos.Api.Extensions;
 
-/// <summary>Nombres de políticas CORS, centralizados para evitar literales mágicos repetidos.</summary>
 public static class CorsPolicies
 {
     public const string Frontend = "frontend";
 }
 
-/// <summary>Configuración de CORS para el frontend (incluye credenciales requeridas por SignalR).</summary>
 public static class CorsServiceExtensions
 {
     public static IServiceCollection AddFrontendCors(this IServiceCollection services, IConfiguration configuration)
@@ -19,7 +17,6 @@ public static class CorsServiceExtensions
                 policy.WithOrigins(allowedOrigins)
                     .AllowAnyHeader()
                     .AllowAnyMethod()
-                    // Requerido por SignalR para el transporte WebSocket con orígenes explícitos.
                     .AllowCredentials()));
     }
 }

@@ -1,11 +1,10 @@
-using EventosVivos.Api.Middleware;
+﻿using EventosVivos.Api.Middleware;
 using EventosVivos.Api.RealTime;
 using EventosVivos.Infrastructure.Persistence;
 using Scalar.AspNetCore;
 
 namespace EventosVivos.Api.Extensions;
 
-/// <summary>Configuración del pipeline HTTP y tareas de arranque, separadas del Program.</summary>
 public static class WebApplicationExtensions
 {
     public static WebApplication UseApiPipeline(this WebApplication app)
@@ -15,10 +14,8 @@ public static class WebApplicationExtensions
 
         if (app.Environment.IsDevelopment())
         {
-            // Documento OpenAPI nativo en /openapi/v1.json + UI interactiva (Scalar) en /scalar.
             app.MapOpenApi();
             app.MapScalarApiReference();
-            // Comodidad: la raíz redirige a la UI de Scalar.
             app.MapGet("/", () => Results.Redirect("/scalar"));
         }
 
@@ -30,7 +27,6 @@ public static class WebApplicationExtensions
         return app;
     }
 
-    /// <summary>Aplica migraciones y seed al arrancar (idempotente).</summary>
     public static Task InitializeDatabaseAsync(this WebApplication app) =>
         DatabaseInitializer.ApplyMigrationsAsync(app.Services);
 }

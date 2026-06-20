@@ -1,4 +1,4 @@
-using EventosVivos.Application.Common.Abstractions;
+﻿using EventosVivos.Application.Common.Abstractions;
 using EventosVivos.Application.Features.Reservations.CancelReservation;
 using EventosVivos.Application.Features.Reservations.ConfirmReservation;
 using EventosVivos.Application.Features.Reservations.Shared;
@@ -68,7 +68,6 @@ public sealed class ConfirmAndCancelReservationHandlerTests
     {
         @event = TestData.ValidEvent(maxCapacity: 100);
         Reservation reservation = Reservation.Create(@event, 2, "Ana", TestData.BuyerEmail(), TestData.Now).Value;
-        // Vincula el evento para que el handler de cancelación pueda liberar entradas.
         typeof(Reservation).GetProperty(nameof(Reservation.Event))!.SetValue(reservation, @event);
         return reservation;
     }

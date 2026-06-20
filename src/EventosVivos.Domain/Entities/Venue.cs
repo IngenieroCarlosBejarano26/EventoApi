@@ -1,10 +1,7 @@
-using EventosVivos.Domain.Common;
+﻿using EventosVivos.Domain.Common;
 
 namespace EventosVivos.Domain.Entities;
 
-/// <summary>
-/// Lugar físico donde se realizan los eventos. Es dato de referencia (seed) con capacidad fija.
-/// </summary>
 public sealed class Venue : Entity
 {
     public int Id { get; private set; }

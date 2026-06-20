@@ -1,14 +1,10 @@
-using EventosVivos.Domain.Common;
+﻿using EventosVivos.Domain.Common;
 using EventosVivos.Domain.Enums;
 using EventosVivos.Domain.Errors;
 using EventosVivos.Domain.Events;
 
 namespace EventosVivos.Domain.Entities;
 
-/// <summary>
-/// Raíz de agregado Evento. Concentra las invariantes de negocio relacionadas con el evento
-/// y la disponibilidad de entradas en tiempo real (clave para evitar la sobreventa).
-/// </summary>
 public sealed class Event : Entity
 {
     public const int TitleMinLength = 5;
@@ -23,7 +19,6 @@ public sealed class Event : Entity
     public Venue? Venue { get; private set; }
     public int MaxCapacity { get; private set; }
 
-    /// <summary>Entradas aún disponibles. Se descuenta al reservar para tener control en tiempo real.</summary>
     public int AvailableTickets { get; private set; }
 
     public DateTimeOffset StartDate { get; private set; }
@@ -34,11 +29,6 @@ public sealed class Event : Entity
 
     private Event() { } // EF Core
 
-    /// <summary>
-    /// Fábrica que crea un evento válido o devuelve el error de negocio correspondiente.
-    /// Valida invariantes propias del agregado (RN01 capacidad, RN03 horario nocturno y validaciones de RF-01).
-    /// La no-superposición de venues (RN02) requiere consultar otros eventos y se valida en el handler.
-    /// </summary>
     public static Result<Event> Create(
         string title,
         string description,
@@ -71,11 +61,9 @@ public sealed class Event : Entity
         if (endDate <= startDate)
             return DomainErrors.Event.EndMustBeAfterStart;
 
-        // RN01: la capacidad del evento no puede exceder la del venue.
         if (maxCapacity > venue.Capacity)
             return DomainErrors.Event.ExceedsVenueCapacity;
 
-        // RN03: en fin de semana no puede iniciar después de las 22:00.
         if (IsWeekendNight(startDate))
             return DomainErrors.Event.WeekendNightRestriction;
 
@@ -99,7 +87,6 @@ public sealed class Event : Entity
         return @event;
     }
 
-    /// <summary>Descuenta entradas de forma segura (RF-03: no exceder capacidad).</summary>
     public Result ReserveTickets(int quantity)
     {
         if (quantity < 1)
@@ -112,13 +99,11 @@ public sealed class Event : Entity
         return Result.Success();
     }
 
-    /// <summary>Devuelve entradas al inventario (RF-05: liberar al cancelar) sin superar la capacidad.</summary>
     public void ReleaseTickets(int quantity)
     {
         AvailableTickets = Math.Min(MaxCapacity, AvailableTickets + quantity);
     }
 
-    /// <summary>RN06: marca el evento como completado cuando la fecha actual supera su fin.</summary>
     public bool MarkAsCompletedIfFinished(DateTimeOffset now)
     {
         if (Status != EventStatus.Activo || now <= EndDate)
@@ -138,7 +123,6 @@ public sealed class Event : Entity
         return Result.Success();
     }
 
-    /// <summary>Entradas confirmadas/comprometidas = capacidad - disponibles.</summary>
     public int SoldTickets => MaxCapacity - AvailableTickets;
 
     private static bool IsWeekendNight(DateTimeOffset start)

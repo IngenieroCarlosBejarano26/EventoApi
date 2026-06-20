@@ -1,4 +1,4 @@
-using EventosVivos.Application.Common.Abstractions;
+﻿using EventosVivos.Application.Common.Abstractions;
 using EventosVivos.Application.Common.Messaging;
 using EventosVivos.Domain.Common;
 using EventosVivos.Domain.Entities;
@@ -29,7 +29,6 @@ internal sealed class GetOccupancyReportQueryHandler(
             {
                 IReadOnlyList<Reservation> reservations = await reservationRepository.ListByEventAsync(query.EventId, ct);
 
-                // "Vendidas" = confirmadas + perdidas (RN07: la perdida cuenta para el reporte).
                 int soldTickets = reservations
                     .Where(r => r.Status is ReservationStatus.Confirmada or ReservationStatus.Perdida)
                     .Sum(r => r.Quantity);

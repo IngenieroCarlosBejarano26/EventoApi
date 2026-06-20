@@ -1,4 +1,4 @@
-using EventosVivos.Api.Extensions;
+﻿using EventosVivos.Api.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -12,5 +12,4 @@ await app.InitializeDatabaseAsync();
 
 await app.RunAsync();
 
-/// <summary>Punto de entrada expuesto para pruebas de integración.</summary>
 public partial class Program;

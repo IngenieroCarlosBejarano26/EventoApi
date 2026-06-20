@@ -1,15 +1,10 @@
-using EventosVivos.Application.Common.Abstractions;
+﻿using EventosVivos.Application.Common.Abstractions;
 using EventosVivos.Domain.Entities;
 using EventosVivos.Domain.Events;
 using MediatR;
 
 namespace EventosVivos.Application.DomainEventHandlers;
 
-/// <summary>
-/// Difunde en tiempo real la disponibilidad/estado de un evento cuando cambia por una reserva
-/// (creada, confirmada, cancelada) o por su auto-completado (RN06). Reutiliza los Domain Events
-/// existentes como única fuente de verdad: el transporte (SignalR) puede sustituirse sin tocar el dominio.
-/// </summary>
 public sealed class RealtimeEventUpdateHandler(
     IEventRepository events,
     IRealtimeNotifier realtime)

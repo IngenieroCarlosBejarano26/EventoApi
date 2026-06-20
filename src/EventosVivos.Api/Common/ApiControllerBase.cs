@@ -1,4 +1,4 @@
-using EventosVivos.Domain.Common;
+﻿using EventosVivos.Domain.Common;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventosVivos.Api.Common;
@@ -6,7 +6,6 @@ namespace EventosVivos.Api.Common;
 [ApiController]
 public abstract class ApiControllerBase : ControllerBase
 {
-    /// <summary>Traduce un Result&lt;T&gt; a la respuesta HTTP adecuada (éxito o ProblemDetails).</summary>
     protected IActionResult HandleResult<T>(Result<T> result) =>
         result.IsSuccess
             ? Ok(result.Value)

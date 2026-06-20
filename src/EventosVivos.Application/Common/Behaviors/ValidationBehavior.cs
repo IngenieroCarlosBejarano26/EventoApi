@@ -1,14 +1,10 @@
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
 using ValidationException = EventosVivos.Application.Common.Exceptions.ValidationException;
 
 namespace EventosVivos.Application.Common.Behaviors;
 
-/// <summary>
-/// Behavior de MediatR que ejecuta automáticamente todos los validadores FluentValidation
-/// registrados para el request antes de llegar al handler.
-/// </summary>
 public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull

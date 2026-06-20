@@ -3,20 +3,21 @@ using Microsoft.OpenApi;
 
 namespace EventosVivos.Api.Extensions;
 
-/// <summary>
-/// Documentación OpenAPI nativa de ASP.NET Core (.NET 10). Sustituye a Swashbuckle/Swagger:
-/// el documento se genera desde los metadatos del framework y se enriquece con transformers.
-/// </summary>
 public static class OpenApiServiceExtensions
 {
     public static IServiceCollection AddOpenApiDocumentation(this IServiceCollection services) =>
-        services.AddOpenApi(options => options.AddDocumentTransformer<ApiKeyDocumentTransformer>());
+        services
+            .AddOpenApi(options =>
+            {
+                options.AddDocumentTransformer<ApiDocumentTransformer>();
+                options.AddOperationTransformer<IdempotencyOperationTransformer>();
+            });
 }
 
-/// <summary>Añade la metadata del documento y el esquema de seguridad por API Key (X-API-KEY).</summary>
-internal sealed class ApiKeyDocumentTransformer : IOpenApiDocumentTransformer
+internal sealed class ApiDocumentTransformer : IOpenApiDocumentTransformer
 {
     private const string ApiKeyScheme = "ApiKey";
+    private const string IdempotencyScheme = "IdempotencyKey";
 
     public Task TransformAsync(
         OpenApiDocument document,
@@ -27,17 +28,65 @@ internal sealed class ApiKeyDocumentTransformer : IOpenApiDocumentTransformer
         {
             Title = "EventosVivos API",
             Version = "v1",
-            Description = "Núcleo del sistema de gestión de eventos y reservas."
+            Description = """
+                API REST del sistema de gestión de eventos y reservas.
+
+                ## Autenticación
+                Los endpoints administrativos requieren el header **X-API-KEY** (crear evento, confirmar pago).
+
+                ## Idempotencia
+                `POST /api/reservations` acepta **X-Idempotency-Key** para evitar reservas duplicadas en reintentos.
+
+                ## Errores
+                Las respuestas de error siguen [RFC 7807 Problem Details](https://datatracker.ietf.org/doc/html/rfc7807).
+                El campo `errorCode` en `extensions` identifica el error de negocio.
+
+                ## Tiempo real
+                Hub SignalR en `/hubs/events` — eventos `EventCreated` y `EventUpdated`.
+                """,
+            Contact = new OpenApiContact
+            {
+                Name = "EventosVivos",
+                Url = new Uri("https://github.com/IngenieroCarlosBejarano26/EventoApi")
+            }
+        };
+
+        document.Tags = new HashSet<OpenApiTag>
+        {
+            new OpenApiTag
+            {
+                Name = "Events",
+                Description = "Alta, consulta filtrada y reportes de ocupación de eventos."
+            },
+            new OpenApiTag
+            {
+                Name = "Reservations",
+                Description = "Reserva de entradas, confirmación de pago y cancelación."
+            },
+            new OpenApiTag
+            {
+                Name = "Venues",
+                Description = "Catálogo de sedes disponibles."
+            }
         };
 
         document.Components ??= new OpenApiComponents();
         document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+
         document.Components.SecuritySchemes[ApiKeyScheme] = new OpenApiSecurityScheme
         {
             Name = "X-API-KEY",
             Type = SecuritySchemeType.ApiKey,
             In = ParameterLocation.Header,
-            Description = "API Key para endpoints administrativos."
+            Description = "Clave de API para operaciones administrativas."
+        };
+
+        document.Components.SecuritySchemes[IdempotencyScheme] = new OpenApiSecurityScheme
+        {
+            Name = "X-Idempotency-Key",
+            Type = SecuritySchemeType.ApiKey,
+            In = ParameterLocation.Header,
+            Description = "Clave única por intento de reserva. Reintentos con la misma clave no duplican la operación."
         };
 
         document.Security ??= [];
@@ -45,6 +94,32 @@ internal sealed class ApiKeyDocumentTransformer : IOpenApiDocumentTransformer
         {
             [new OpenApiSecuritySchemeReference(ApiKeyScheme, document)] = []
         });
+
+        return Task.CompletedTask;
+    }
+}
+
+internal sealed class IdempotencyOperationTransformer : IOpenApiOperationTransformer
+{
+    public Task TransformAsync(
+        OpenApiOperation operation,
+        OpenApiOperationTransformerContext context,
+        CancellationToken cancellationToken)
+    {
+        if (context.Description.ActionDescriptor.RouteValues.TryGetValue("action", out string? action)
+            && action == "Create"
+            && context.Description.RelativePath?.Contains("reservations", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            operation.Parameters ??= [];
+            operation.Parameters.Add(new OpenApiParameter
+            {
+                Name = "X-Idempotency-Key",
+                In = ParameterLocation.Header,
+                Required = false,
+                Description = "UUID recomendado. Garantiza idempotencia en la creación de reservas.",
+                Schema = new OpenApiSchema { Type = JsonSchemaType.String, Format = "uuid" }
+            });
+        }
 
         return Task.CompletedTask;
     }
