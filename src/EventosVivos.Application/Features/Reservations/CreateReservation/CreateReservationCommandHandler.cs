@@ -14,6 +14,7 @@ internal sealed class CreateReservationCommandHandler(
     IReservationRepository reservationRepository,
     IUnitOfWork unitOfWork,
     IDateTimeProvider dateTimeProvider,
+    IEventCompletionService eventCompletionService,
     ICacheService cache)
     : ICommandHandler<CreateReservationCommand, ReservationDto>
 {
@@ -24,6 +25,8 @@ internal sealed class CreateReservationCommandHandler(
         Result<Email> emailResult = Email.Create(command.BuyerEmail);
         if (emailResult.IsFailure)
             return Result.Failure<ReservationDto>(emailResult.Error);
+
+        await eventCompletionService.CompleteFinishedEventsAsync(cancellationToken);
 
         for (int attempt = 1; ; attempt++)
         {

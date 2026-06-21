@@ -127,7 +127,8 @@ public sealed class Event : Entity
 
     private static bool IsWeekendNight(DateTimeOffset start)
     {
-        bool isWeekend = start.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
-        return isWeekend && start.TimeOfDay > new TimeSpan(22, 0, 0);
+        DateTimeOffset localStart = BusinessTimeZone.ToLocal(start);
+        bool isWeekend = localStart.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
+        return isWeekend && localStart.TimeOfDay > new TimeSpan(22, 0, 0);
     }
 }

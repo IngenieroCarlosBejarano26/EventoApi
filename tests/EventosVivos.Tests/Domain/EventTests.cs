@@ -37,14 +37,41 @@ public sealed class EventTests
         result.Error.Should().Be(DomainErrors.Event.ExceedsVenueCapacity);
     }
 
-    [Fact] // RN03 - Sábado 23:00
+    [Fact] // RN03 - sábado 23:00 hora Bogotá
     public void Create_OnWeekendAfter22_ShouldFail()
     {
-        DateTimeOffset saturdayNight = new(2026, 1, 10, 23, 0, 0, TimeSpan.Zero);
+        DateTimeOffset saturdayNightBogota = new(2026, 1, 11, 4, 0, 0, TimeSpan.Zero);
 
         Result<Event> result = Event.Create(
             "Concierto nocturno", "Descripción válida del evento.",
-            TestData.AuditorioCentral(), 100, saturdayNight, saturdayNight.AddHours(2),
+            TestData.AuditorioCentral(), 100, saturdayNightBogota, saturdayNightBogota.AddHours(2),
+            50m, EventType.Concierto, Now);
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Be(DomainErrors.Event.WeekendNightRestriction);
+    }
+
+    [Fact] // RN03 - sábado 22:00 exacto en Bogotá debe permitirse
+    public void Create_AtSaturday22InBusinessTimeZone_ShouldSucceed()
+    {
+        DateTimeOffset saturday22Bogota = new(2026, 1, 11, 3, 0, 0, TimeSpan.Zero);
+
+        Result<Event> result = Event.Create(
+            "Concierto temprano", "Descripción válida del evento.",
+            TestData.AuditorioCentral(), 100, saturday22Bogota, saturday22Bogota.AddHours(2),
+            50m, EventType.Concierto, Now);
+
+        result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact] // RN03 - domingo en UTC pero sábado 23:00 en Bogotá
+    public void Create_WhenUtcIsSundayButBusinessTimeIsSaturdayNight_ShouldFail()
+    {
+        DateTimeOffset sundayMorningUtc = new(2026, 1, 11, 4, 30, 0, TimeSpan.Zero);
+
+        Result<Event> result = Event.Create(
+            "Concierto nocturno", "Descripción válida del evento.",
+            TestData.AuditorioCentral(), 100, sundayMorningUtc, sundayMorningUtc.AddHours(2),
             50m, EventType.Concierto, Now);
 
         result.IsFailure.Should().BeTrue();

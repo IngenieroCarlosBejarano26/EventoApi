@@ -20,6 +20,7 @@ public sealed class ConfirmAndCancelReservationHandlerTests
     private readonly IUnitOfWork _uow = Substitute.For<IUnitOfWork>();
     private readonly ICacheService _cache = Substitute.For<ICacheService>();
     private readonly IDateTimeProvider _clock = new FakeDateTimeProvider(TestData.Now);
+    private readonly IEventCompletionService _eventCompletion = Substitute.For<IEventCompletionService>();
 
     [Fact] // RF-04
     public async Task Confirm_WhenPending_ShouldConfirmAndGenerateCode()
@@ -27,7 +28,7 @@ public sealed class ConfirmAndCancelReservationHandlerTests
         Reservation reservation = NewPendingReservation(out _);
         _reservations.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(reservation);
 
-        ConfirmReservationCommandHandler sut = new(_reservations, _uow, _clock, _cache);
+        ConfirmReservationCommandHandler sut = new(_reservations, _uow, _clock, _eventCompletion, _cache);
         Result<ReservationDto> result = await sut.Handle(new ConfirmReservationCommand(reservation.Id), CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
@@ -43,7 +44,7 @@ public sealed class ConfirmAndCancelReservationHandlerTests
         reservation.Confirm(ReservationCode.New(), TestData.Now);
         _reservations.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(reservation);
 
-        ConfirmReservationCommandHandler sut = new(_reservations, _uow, _clock, _cache);
+        ConfirmReservationCommandHandler sut = new(_reservations, _uow, _clock, _eventCompletion, _cache);
         Result<ReservationDto> result = await sut.Handle(new ConfirmReservationCommand(reservation.Id), CancellationToken.None);
 
         result.Error.Should().Be(DomainErrors.Reservation.AlreadyConfirmed);
@@ -55,7 +56,7 @@ public sealed class ConfirmAndCancelReservationHandlerTests
         Reservation reservation = NewPendingReservation(out Event @event);
         _reservations.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(reservation);
 
-        CancelReservationCommandHandler sut = new(_reservations, _uow, _clock, _cache);
+        CancelReservationCommandHandler sut = new(_reservations, _uow, _clock, _eventCompletion, _cache);
         Result<ReservationDto> result = await sut.Handle(new CancelReservationCommand(reservation.Id), CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();

@@ -8,6 +8,7 @@ namespace EventosVivos.Application.Features.Events.GetEvents;
 
 internal sealed class GetEventsQueryHandler(
     IEventRepository eventRepository,
+    IEventCompletionService eventCompletionService,
     ICacheService cache)
     : IQueryHandler<GetEventsQuery, IReadOnlyList<EventDto>>
 {
@@ -15,6 +16,8 @@ internal sealed class GetEventsQueryHandler(
 
     public async Task<Result<IReadOnlyList<EventDto>>> Handle(GetEventsQuery query, CancellationToken cancellationToken)
     {
+        await eventCompletionService.CompleteFinishedEventsAsync(cancellationToken);
+
         EventFilter filter = new(
             query.Type,
             query.StartDateFrom,

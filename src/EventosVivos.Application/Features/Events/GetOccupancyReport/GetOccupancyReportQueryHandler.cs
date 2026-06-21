@@ -10,6 +10,7 @@ namespace EventosVivos.Application.Features.Events.GetOccupancyReport;
 internal sealed class GetOccupancyReportQueryHandler(
     IEventRepository eventRepository,
     IReservationRepository reservationRepository,
+    IEventCompletionService eventCompletionService,
     ICacheService cache)
     : IQueryHandler<GetOccupancyReportQuery, OccupancyReportResponse>
 {
@@ -19,6 +20,8 @@ internal sealed class GetOccupancyReportQueryHandler(
         GetOccupancyReportQuery query,
         CancellationToken cancellationToken)
     {
+        await eventCompletionService.CompleteFinishedEventsAsync(cancellationToken);
+
         Event? @event = await eventRepository.GetByIdAsync(query.EventId, includeVenue: false, cancellationToken);
         if (@event is null)
             return DomainErrors.Event.NotFound(query.EventId);

@@ -19,8 +19,10 @@ public sealed class CreateEventCommandHandlerTests
     private readonly IUnitOfWork _uow = Substitute.For<IUnitOfWork>();
     private readonly ICacheService _cache = Substitute.For<ICacheService>();
     private readonly IDateTimeProvider _clock = new FakeDateTimeProvider(TestData.Now);
+    private readonly IEventCompletionService _eventCompletion = Substitute.For<IEventCompletionService>();
 
-    private CreateEventCommandHandler CreateSut() => new(_events, _venues, _uow, _clock, _cache);
+    private CreateEventCommandHandler CreateSut() =>
+        new(_events, _venues, _uow, _clock, _eventCompletion, _cache);
 
     private static CreateEventCommand ValidCommand(int venueId = 1, int capacity = 100) =>
         new("Conferencia .NET", "Descripción válida del evento.",

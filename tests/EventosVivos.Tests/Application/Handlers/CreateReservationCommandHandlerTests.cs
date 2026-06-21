@@ -18,8 +18,10 @@ public sealed class CreateReservationCommandHandlerTests
     private readonly IUnitOfWork _uow = Substitute.For<IUnitOfWork>();
     private readonly ICacheService _cache = Substitute.For<ICacheService>();
     private readonly IDateTimeProvider _clock = new FakeDateTimeProvider(TestData.Now);
+    private readonly IEventCompletionService _eventCompletion = Substitute.For<IEventCompletionService>();
 
-    private CreateReservationCommandHandler CreateSut() => new(_events, _reservations, _uow, _clock, _cache);
+    private CreateReservationCommandHandler CreateSut() =>
+        new(_events, _reservations, _uow, _clock, _eventCompletion, _cache);
 
     [Fact]
     public async Task Handle_WhenEventNotFound_ShouldReturnNotFound()

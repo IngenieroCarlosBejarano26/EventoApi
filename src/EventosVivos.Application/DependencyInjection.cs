@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 using EventosVivos.Application.Common.Behaviors;
+using EventosVivos.Application.Common.Abstractions;
+using EventosVivos.Application.Common.Services;
 using EventosVivos.Application.DomainEventHandlers;
 using FluentValidation;
 using MediatR;
@@ -17,6 +19,8 @@ public static class DependencyInjection
         services.AddPipelineBehaviors();
 
         services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
+
+        services.AddScoped<IEventCompletionService, EventCompletionService>();
 
         services.AddTransient(typeof(INotificationHandler<>), typeof(DomainEventLoggingHandler<>));
 

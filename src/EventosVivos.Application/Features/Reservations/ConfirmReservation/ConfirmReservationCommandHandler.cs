@@ -12,11 +12,14 @@ internal sealed class ConfirmReservationCommandHandler(
     IReservationRepository reservationRepository,
     IUnitOfWork unitOfWork,
     IDateTimeProvider dateTimeProvider,
+    IEventCompletionService eventCompletionService,
     ICacheService cache)
     : ICommandHandler<ConfirmReservationCommand, ReservationDto>
 {
     public async Task<Result<ReservationDto>> Handle(ConfirmReservationCommand command, CancellationToken cancellationToken)
     {
+        await eventCompletionService.CompleteFinishedEventsAsync(cancellationToken);
+
         Reservation? reservation = await reservationRepository.GetByIdAsync(command.ReservationId, includeEvent: false, cancellationToken);
         if (reservation is null)
             return DomainErrors.Reservation.NotFound(command.ReservationId);

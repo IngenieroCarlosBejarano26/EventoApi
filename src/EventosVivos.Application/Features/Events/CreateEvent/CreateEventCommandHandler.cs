@@ -12,11 +12,14 @@ internal sealed class CreateEventCommandHandler(
     IVenueRepository venueRepository,
     IUnitOfWork unitOfWork,
     IDateTimeProvider dateTimeProvider,
+    IEventCompletionService eventCompletionService,
     ICacheService cache)
     : ICommandHandler<CreateEventCommand, EventDto>
 {
     public async Task<Result<EventDto>> Handle(CreateEventCommand command, CancellationToken cancellationToken)
     {
+        await eventCompletionService.CompleteFinishedEventsAsync(cancellationToken);
+
         Venue? venue = await venueRepository.GetByIdAsync(command.VenueId, cancellationToken);
         if (venue is null)
             return DomainErrors.Venue.NotFound(command.VenueId);
