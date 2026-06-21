@@ -8,10 +8,3 @@ public interface IRealtimeNotifier
 
     Task EventCreatedAsync(EventDto @event, CancellationToken cancellationToken = default);
 }
-
-public sealed record EventRealtimeUpdate(
-    Guid EventId,
-    int AvailableTickets,
-    int MaxCapacity,
-    int SoldTickets,
-    string Status);

@@ -1,10 +1,5 @@
 ﻿namespace EventosVivos.Api.Extensions;
 
-public static class CorsPolicies
-{
-    public const string Frontend = "frontend";
-}
-
 public static class CorsServiceExtensions
 {
     public static IServiceCollection AddFrontendCors(this IServiceCollection services, IConfiguration configuration)

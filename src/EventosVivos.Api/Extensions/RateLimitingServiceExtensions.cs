@@ -6,11 +6,6 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace EventosVivos.Api.Extensions;
 
-public static class RateLimitPolicies
-{
-    public const string Reservations = "reservations";
-}
-
 public static class RateLimitingServiceExtensions
 {
     public static IServiceCollection AddRateLimiting(this IServiceCollection services, IConfiguration configuration)
@@ -72,7 +67,7 @@ public static class RateLimitingServiceExtensions
         {
             Status = StatusCodes.Status429TooManyRequests,
             Title = "Too Many Requests",
-            Detail = "Has superado el lÃ­mite de solicitudes permitido. IntÃ©ntalo de nuevo mÃ¡s tarde."
+            Detail = "Has superado el límite de solicitudes permitido. Inténtalo de nuevo más tarde."
         }, cancellationToken);
     }
 }

@@ -8,9 +8,3 @@ public sealed class RateLimitingOptions
 
     public RateLimitRule Reservations { get; init; } = new() { PermitLimit = 10, WindowSeconds = 60 };
 }
-
-public sealed class RateLimitRule
-{
-    public int PermitLimit { get; init; }
-    public int WindowSeconds { get; init; }
-}
